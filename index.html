@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KSMD AI Chat</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #chatBox {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 24px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 20px #00ffcc;
+    }
+    #chatBox h2 {
+      text-align: center;
+      color: #00ffcc;
+      margin-bottom: 16px;
+    }
+    #chatHistory {
+      height: 320px;
+      overflow-y: auto;
+      background: #111;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid #444;
+    }
+    #chatHistory p {
+      margin: 8px 0;
+    }
+    .user-msg {
+      text-align: right;
+      color: #00ccff;
+    }
+    .bot-msg {
+      text-align: left;
+      color: #ff77ff;
+    }
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      padding: 10px 16px;
+      background-color: #00ffcc;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #00ddb3;
+    }
+  </style>
+</head>
+<body>
+  <div id="chatBox">
+    <h2>🤖 KSMD AI Assistant</h2>
+    <div id="chatHistory"></div>
+    <div style="display: flex; align-items: center;">
+      <input type="text" id="userInput" placeholder="Talk to KSMD AI..." />
+      <button onclick="sendMessage()">➡️</button>
+    </div>
+  </div>
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chatHistory = document.getElementById("chatHistory");
+      const message = input.value.trim();
+      if (!message) return;
+      const userBubble = `<p class='user-msg'>👨‍💻: ${message}</p>`;
+      chatHistory.innerHTML += userBubble;
+      input.value = "";
+      const res = await fetch("/.netlify/functions/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+      const data = await res.json();
+      const botBubble = `<p class='bot-msg'>🤖 KSMD: ${data.reply}</p>`;
+      chatHistory.innerHTML += botBubble;
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+  </script>
+</body>
+</html>
